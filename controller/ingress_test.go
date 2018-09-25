@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	zv1 "github.com/zalando-incubator/stackset-controller/pkg/apis/zalando/v1"
@@ -24,25 +23,20 @@ func getFakeController() *StackSetController {
 func TestIngressReconcile(t *testing.T) {
 	controller := getFakeController()
 	sc := StackSetContainer{
-		StackContainers:map[types.UID]*StackContainer{
-			"test": &StackContainer{
-
-			},
+		StackContainers: map[types.UID]*StackContainer{
+			"test": {},
 		},
 		StackSet: zv1.StackSet{
-
 			Spec: zv1.StackSetSpec{
-				Ingress: &zv1.StackSetIngressSpec{
-					Hosts: []string{"my-app.example.org"},
-				},
+				Ingress: &zv1.StackSetIngressSpec{},
 			},
 		},
 	}
-	sc.Ingress = &v1beta1.Ingress{}
 	err := controller.ReconcileIngress(sc)
-	ingressList, err := controller.client.ExtensionsV1beta1().Ingresses("test").List(v1.ListOptions{})
 	assert.NoError(t, err)
-	ingressLenght := len(ingressList.Items)
-	assert.Equal(t, ingressLenght, 1)
+	ingressList, err := controller.client.ExtensionsV1beta1().Ingresses("").List(v1.ListOptions{})
+	assert.NoError(t, err)
+	ingressLength := len(ingressList.Items)
+	assert.Equal(t, ingressLength, 1)
 	assert.Equal(t, err, nil)
 }
